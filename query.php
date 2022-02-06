@@ -45,3 +45,11 @@
         $transactions = mysqli_query($conn, $sqlTransactions);
     }
     
+    if(isset($_POST['btnSearch'])){
+        $txtSearch = $_POST['txtSearch'];
+        // var_dump($txtSearch);
+        $sqlTransactions = "SELECT * FROM transactions WHERE status LIKE '%$txtSearch%' OR typeoftransaction LIKE '%$txtSearch%' OR transactionfrom LIKE '%$txtSearch%'";
+        // var_dump($sqlTransactions);
+        $transactions = mysqli_query($conn, $sqlTransactions);
+    }
+?>
