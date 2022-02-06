@@ -1,8 +1,8 @@
 <?php
 session_start();
 if (session_id() == '' || !isset($_SESSION['username'])) {
-  $username = 'Kashyap Shah';
-  $password = 'Password@123';
+  $username = ''; //your username
+  $password = ''; //your password
 
   if (isset($_POST['submit']) && isset($_POST['pswd']))
   {
