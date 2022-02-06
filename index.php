@@ -89,6 +89,12 @@ if (session_id() == '' || !isset($_SESSION['username'])) {?>
                 </div>
                 <hr>
                 <h2>Dashboard</h2>
+                <form class="my-2" method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                <div class="form-group">
+                    <input type="text" class="rounded" name="txtSearch" id="txtSearch">
+                    <button type="submit" name="btnSearch" id="btnSearch" class="btn btn-sm btn-outline-light">Search</button>
+                </div>
+                </form>
                 <div class="rounded bg-light table-responsive">                    
                     <table class=" table table-light table-striped">
                         <thead>
@@ -96,17 +102,20 @@ if (session_id() == '' || !isset($_SESSION['username'])) {?>
                             <th>Transaction From</th>
                             <th>Amount</th>
                             <th>Summary</th>
+                            <th>Status</th>
                             <th>Date</th>
                         </thead>
                         <tbody>
                             <?php
                                 while($row = mysqli_fetch_assoc($transactions)) {
+                                    $date = DateTime::createFromFormat('Y-m-d', $row["dateupdated"]);
                                     echo '<tr>';
                                     echo '<td>' . $row['typeoftransaction'] . '</td>';
                                     echo '<td>' . $row['transactionfrom'] . '</td>';
                                     echo '<td>' . $row['amount'] . '</td>';
                                     echo '<td>' . $row['summary'] . '</td>';
-                                    echo '<td>' . $row['dateupdated'] . '</td>';
+                                    echo '<td>' . $row['status'] . '</td>';
+                                    echo '<td>' . $date->format('d/F/Y (l)') . '</td>';
                                     echo '</tr>';
                                 }
                             ?>
@@ -125,32 +134,40 @@ if (session_id() == '' || !isset($_SESSION['username'])) {?>
                             <div class="modal-body">
                             <div id="msg"></div>
                             <form action="<?php echo $_SERVER['PHP_SELF']; ?>" name="frmCredit" onsubmit="return validate('frmCredit')" method="post">
-                                <label for="bankName" class="form-label">Select Type:</label>
-                                <select name="bankName" id="bankName" class="form-control" aria-describedby="selectHelp">
-                                    <option value="cash">Cash</option>
-                                    <option value="sbi">SBI</option>
-                                    <option value="idbi">IDBI</option>
-                                    <option value="paytm">Paytm</option>
-                                </select>
+                                <div class="form-group">
+                                    <label for="bankName" class="form-label">Select Type:</label>
+                                    <select name="bankName" id="bankName" class="form-control" aria-describedby="selectHelp">
+                                        <option value="cash">Cash</option>
+                                        <option value="sbi">SBI</option>
+                                        <option value="idbi">IDBI</option>
+                                        <option value="paytm">Paytm</option>
+                                    </select>
+                                </div>
                                 <div id="selectHelp" class="form-text">Press the above field to select.</div>
-                                <label for="txtAmount" class="form-label">Amount</label>
-                                <input type="text" name="txtAmount" id="txtAmount" class="form-control">
-                                <label for="txtSummary" class="form-label">Credited From Summary</label>
-                                <textarea name="txtSummary" id="txtSummary" cols="20" rows="5" class="form-control"></textarea>
-                                <label for="dateCredit" class="form-label">Date</label>
-                                <input type="text" name="dateCredit" id="dateCredit" class="form-control">
-                                <script>
-                                    $(document).ready(function() {
-                                        $(function() {
-                                            $( "#dateCredit" ).datepicker({
-                                                dateFormat: 'dd/mm/yy',
-                                                changeMonth: true,
-                                                changeYear: true,
-                                                yearRange: '2020:+0'
+                                <div class="form-group">
+                                    <label for="txtAmount" class="form-label">Amount</label>
+                                    <input type="text" name="txtAmount" id="txtAmount" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="txtSummary" class="form-label">Credited From Summary</label>
+                                    <textarea name="txtSummary" id="txtSummary" cols="20" rows="5" class="form-control"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dateCredit" class="form-label">Date</label>
+                                    <input type="text" name="dateCredit" id="dateCredit" class="form-control">
+                                    <script>
+                                        $(document).ready(function() {
+                                            $(function() {
+                                                $( "#dateCredit" ).datepicker({
+                                                    dateFormat: 'dd/mm/yy',
+                                                    changeMonth: true,
+                                                    changeYear: true,
+                                                    yearRange: '2020:+0'
+                                                });
                                             });
-                                        });
-                                    })
-                                </script>
+                                        })
+                                    </script>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -171,32 +188,40 @@ if (session_id() == '' || !isset($_SESSION['username'])) {?>
                             </div>
                             <div class="modal-body">
                             <form action="<?php echo $_SERVER['PHP_SELF']; ?>" name="frmDebit" onsubmit="return validate('frmDebit')" method="post">
-                                <label for="bankName" class="form-label">Select Type:</label>
-                                <select name="bankName" id="bankName" class="form-control" aria-describedby="selectHelp">
-                                    <option value="cash">Cash</option>
-                                    <option value="sbi">SBI</option>
-                                    <option value="idbi">IDBI</option>
-                                    <option value="paytm">Paytm</option>
-                                </select>
-                                <div id="selectHelp" class="form-text">Press the above field to select.</div>
-                                <label for="txtAmount" class="form-label">Amount</label>
-                                <input type="text" name="txtAmount" id="txtAmount" class="form-control">
-                                <label for="txtSummary" class="form-label">Debited To Summary</label>
-                                <textarea name="txtSummary" id="txtSummary" cols="20" rows="5" class="form-control"></textarea>
-                                <label for="dateDebit" class="form-label">Date</label>
-                                <input type="text" name="dateDebit" id="dateDebit" class="form-control">
-                                <script>
-                                    $(document).ready(function() {
-                                        $(function() {
-                                            $( "#dateDebit" ).datepicker({
-                                                dateFormat: 'dd/mm/yy',
-                                                changeMonth: true,
-                                                changeYear: true,
-                                                yearRange: '2020:+0'
+                                <div class="form-group">
+                                    <label for="bankName" class="form-label">Select Type:</label>
+                                    <select name="bankName" id="bankName" class="form-control" aria-describedby="selectHelp">
+                                        <option value="cash">Cash</option>
+                                        <option value="sbi">SBI</option>
+                                        <option value="idbi">IDBI</option>
+                                        <option value="paytm">Paytm</option>
+                                    </select>
+                                    <div id="selectHelp" class="form-text">Press the above field to select.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="txtAmount" class="form-label">Amount</label>
+                                    <input type="text" name="txtAmount" id="txtAmount" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="txtSummary" class="form-label">Debited To Summary</label>
+                                    <textarea name="txtSummary" id="txtSummary" cols="20" rows="5" class="form-control"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dateDebit" class="form-label">Date</label>
+                                    <input type="text" name="dateDebit" id="dateDebit" class="form-control">
+                                    <script>
+                                        $(document).ready(function() {
+                                            $(function() {
+                                                $( "#dateDebit" ).datepicker({
+                                                    dateFormat: 'dd/mm/yy',
+                                                    changeMonth: true,
+                                                    changeYear: true,
+                                                    yearRange: '2020:+0'
+                                                });
                                             });
-                                        });
-                                    })
-                                </script>
+                                        })
+                                    </script>
+                                </div>
                             </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
